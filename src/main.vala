@@ -17,14 +17,6 @@
  */
 
 int main (string[] args) {
-	var app = new Gtk.Application ("com.github.Punteg", ApplicationFlags.FLAGS_NONE);
-	app.activate.connect (() => {
-		var win = app.active_window;
-		if (win == null) {
-			win = new Punteg.Window (app);
-		}
-		win.present ();
-	});
-
+	var app = new Punteg.App ();	
 	return app.run (args);
 }

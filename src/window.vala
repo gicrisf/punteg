@@ -16,14 +16,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+using Gtk;
+
 namespace Punteg {
 	[GtkTemplate (ui = "/com/github/Punteg/window.ui")]
 	public class Window : Gtk.ApplicationWindow {
+		// Window globals
 		[GtkChild]
-		Gtk.Label label;
+		Gtk.Button open_btn;
 
-		public Window (Gtk.Application app) {
+    public Punteg.App application { get; construct; }
+
+		// Get arguments and construct
+		public Window (Punteg.App app) {
 			Object (application: app);
 		}
-	}
-}
+
+		construct {
+			open_btn.clicked.connect (on_open_btn_clicked);  // open_btn
+		}  // construct
+
+		// Methods
+		public void on_open_btn_clicked () {
+      var file_chooser = new FileChooserDialog (
+        "Open File",
+        this,
+        FileChooserAction.OPEN,
+        "_Cancel", ResponseType.CANCEL,
+        "_Open", ResponseType.ACCEPT
+      );
+
+      if (file_chooser.run () == ResponseType.ACCEPT) {
+        open_file (file_chooser.get_filename ());
+      }  // response accept
+
+      file_chooser.destroy ();
+    }  // on_add_button_clicked
+
+		private void open_file (string filename) {
+        try {
+            // string text;
+            // GLib.FileUtils.get_contents (filename, out text);
+
+            application.my_file = File.parse_name(filename);
+      			stdout.printf("\n✔️ File loaded");
+
+        } catch (Error e) {
+          /**
+           * TODO! Raise a dialog to explain error
+           */
+            stderr.printf ("Error: %s\n", e.message);
+        }
+    }  // open_file
+
+	}  // Window
+}  // namespace

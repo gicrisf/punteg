@@ -1,5 +1,6 @@
 punteg_sources = [
   'main.vala',
+  'Application.vala',
   'window.vala',
 ]
 

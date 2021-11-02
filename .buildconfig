@@ -1,0 +1,10 @@
+[default]
+name=Default
+runtime=host
+toolchain=default
+config-opts=
+run-opts=
+prefix=/home/cromo/.cache/gnome-builder/install/punteg/host
+app-id=
+postbuild=
+prebuild=
