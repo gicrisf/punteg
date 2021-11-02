@@ -1,0 +1,7 @@
+data/com.github.Punteg.desktop.in
+data/com.github.Punteg.appdata.xml.in
+data/com.github.Punteg.gschema.xml
+src/window.ui
+src/main.vala
+src/window.vala
+
