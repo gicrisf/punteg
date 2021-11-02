@@ -9,6 +9,7 @@ namespace Punteg {
 
     // Global variables
     public Window window { get; private set; default = null; }
+    public string my_filename;
     public GLib.File my_file;
 
     // Methods
@@ -26,12 +27,46 @@ namespace Punteg {
 
     }  // activate
 
-  public get_punctuation (line) {
+  public string extract_punctuation (File f) {
     /*
-     * TODO get punctuation from a single line of the file
-     * return it
+     * originally inspired from: https://stackoverflow.com/a/3063796
+     * Docs: https://wiki.gnome.org/Projects/Vala/StringSample
      */
-  }  // get_punctuation
+
+    // https://valadoc.org/gio-2.0/GLib.File.read.html
+    FileInputStream input_s = f.read ();
+    DataInputStream dinput_s = new DataInputStream (input_s);
+    string line;
+
+    var sb = new GLib.StringBuilder ();
+    var sb_out = new GLib.StringBuilder ();
+
+    while ((line = dinput_s.read_line ()) != null) {
+      unichar c;
+      for (int i = 0; line.get_next_char (ref i, out c);) {
+        if (c.ispunct()) {
+          sb_out.append (c.to_string());
+          // stdout.printf(c.to_string());
+        }  // if punct
+      }
+
+      /*
+       * inefficient
+       * TODO: remove
+      for (int i = 0; i < line.char_count (); i++) {
+        var c = line.get_char (line.index_of_nth_char (i));
+        if (c.ispunct()) {
+          sb_out.append (c.to_string());
+          // stdout.printf(c.to_string());
+        }  // if punct
+      }  // for
+      */
+      sb.append (line);
+		}
+
+    stdout.printf("\n✔️ Punctuation extracted");
+    return sb_out.str;
+  }  // extract_punctuation
 
   } // PuntegApp
 }  // namespace

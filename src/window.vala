@@ -24,6 +24,10 @@ namespace Punteg {
 		// Window globals
 		[GtkChild]
 		Gtk.Button open_btn;
+		[GtkChild]
+		Gtk.TextView output_textview;
+		[GtkChild]
+		Gtk.Button extract_btn;
 
     public Punteg.App application { get; construct; }
 
@@ -33,7 +37,8 @@ namespace Punteg {
 		}
 
 		construct {
-			open_btn.clicked.connect (on_open_btn_clicked);  // open_btn
+			open_btn.clicked.connect (on_open_btn_clicked);  // open
+			extract_btn.clicked.connect (on_extract_btn_clicked);  // extract
 		}  // construct
 
 		// Methods
@@ -53,12 +58,20 @@ namespace Punteg {
       file_chooser.destroy ();
     }  // on_add_button_clicked
 
+		public void on_extract_btn_clicked () {
+			TextBuffer extracted_buffer = new TextBuffer (null);
+			extracted_buffer.text = application.extract_punctuation (application.my_file);
+
+			output_textview.set_buffer (extracted_buffer);
+		}
+
 		private void open_file (string filename) {
         try {
             // string text;
-            // GLib.FileUtils.get_contents (filename, out text);
+            // application.my_file = GLib.FileUtils.get_contents (filename, out text);
 
             application.my_file = File.parse_name(filename);
+						application.my_filename = filename;
       			stdout.printf("\n✔️ File loaded");
 
         } catch (Error e) {
