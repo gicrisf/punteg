@@ -1,5 +1,7 @@
+[![Please do not theme this app](https://stopthemingmy.app/badge.svg)](https://stopthemingmy.app)
+
 # Punteg
 
-![screnshot](punteg-screen.png) 
+![show punteg in action](punteg-gif-ulisses.png) 
 
-Take a set of text and extract punctuation from it.
+**Punteg** takes a set of text and extract punctuation from it.

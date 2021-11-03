@@ -22,6 +22,11 @@ namespace Punteg {
 	[GtkTemplate (ui = "/com/github/Punteg/window.ui")]
 	public class Window : Gtk.ApplicationWindow {
 		// Window globals
+		// warning: [GtkChild] fields must be declared as `unowned'
+		// if I declare as `weak` the program crashes
+		// Vala bug -> https://gitlab.gnome.org/GNOME/vala/-/issues/1121
+		[GtkChild]
+		Gtk.HeaderBar header_bar;
 		[GtkChild]
 		Gtk.Button open_btn;
 		[GtkChild]
@@ -32,7 +37,9 @@ namespace Punteg {
     public Punteg.App application { get; construct; }
 		public TextBuffer open_buffer;
 
+		// signals
 		public signal void new_file ();
+		public signal void extracted ();
 
 		// Get arguments and construct
 		public Window (Punteg.App app) {
@@ -49,15 +56,32 @@ namespace Punteg {
 
 			// callbacks
 			this.new_file.connect (() => {
-			application.read_file (application.my_file);
-			application.main_loop.run ();
+				// debug print
+      	stdout.printf("\n✔️ File loaded");
+				// Update the subtitle
+				this.header_bar.set_subtitle (application.my_filename);
 
-			if (application.file_text != null) {
-				open_buffer.set_text (application.file_text);
-			}
+				// Show file in main buffer
+				application.read_file (application.my_file);
+				application.main_loop.run ();
 
-			output_textview.set_buffer (open_buffer);
+				if (application.file_text != null) {
+					open_buffer.set_text (application.file_text);
+				}
+
+				output_textview.set_buffer (open_buffer);
+
+				// enable button
+				this.extract_btn.set_sensitive (true);
 			}); // new file signal
+
+			this.extracted.connect (() => {
+				// debug print
+    		stdout.printf("\n✔️ Punctuation extracted");
+
+				// disable button
+				this.extract_btn.set_sensitive (false);
+				});  // extracted signal
 		}  // construct
 
 		// Methods
@@ -82,6 +106,7 @@ namespace Punteg {
 			extracted_buffer.text = application.extract_punctuation (application.my_file);
 
 			output_textview.set_buffer (extracted_buffer);
+			extracted ();  // signal extracted
 		}
 
 		public void open_file (string filename) {
@@ -91,8 +116,7 @@ namespace Punteg {
 
             application.my_file = File.parse_name(filename);
 						application.my_filename = filename;
-      			stdout.printf("\n✔️ File loaded");
-						new_file ();  // signal emission
+						new_file ();  // signal new_file
 
         } catch (Error e) {
           /**
@@ -103,7 +127,6 @@ namespace Punteg {
     }  // open_file
 
 		// other stuff
-
 
 	}  // Window
 }  // namespace

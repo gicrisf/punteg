@@ -58,7 +58,6 @@ namespace Punteg {
       sb.append (line);
 		}
 
-    stdout.printf("\n✔️ Punctuation extracted");
     return sb_out.str;
   }  // extract_punctuation
 
