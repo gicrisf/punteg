@@ -30,6 +30,9 @@ namespace Punteg {
 		Gtk.Button extract_btn;
 
     public Punteg.App application { get; construct; }
+		public TextBuffer open_buffer;
+
+		public signal void new_file ();
 
 		// Get arguments and construct
 		public Window (Punteg.App app) {
@@ -37,8 +40,24 @@ namespace Punteg {
 		}
 
 		construct {
+			// widgets
+			TextBuffer open_buffer = new TextBuffer (null);
+
+			// actions
 			open_btn.clicked.connect (on_open_btn_clicked);  // open
 			extract_btn.clicked.connect (on_extract_btn_clicked);  // extract
+
+			// callbacks
+			this.new_file.connect (() => {
+			application.read_file (application.my_file);
+			application.main_loop.run ();
+
+			if (application.file_text != null) {
+				open_buffer.set_text (application.file_text);
+			}
+
+			output_textview.set_buffer (open_buffer);
+			}); // new file signal
 		}  // construct
 
 		// Methods
@@ -65,7 +84,7 @@ namespace Punteg {
 			output_textview.set_buffer (extracted_buffer);
 		}
 
-		private void open_file (string filename) {
+		public void open_file (string filename) {
         try {
             // string text;
             // application.my_file = GLib.FileUtils.get_contents (filename, out text);
@@ -73,6 +92,7 @@ namespace Punteg {
             application.my_file = File.parse_name(filename);
 						application.my_filename = filename;
       			stdout.printf("\n✔️ File loaded");
+						new_file ();  // signal emission
 
         } catch (Error e) {
           /**
@@ -81,6 +101,9 @@ namespace Punteg {
             stderr.printf ("Error: %s\n", e.message);
         }
     }  // open_file
+
+		// other stuff
+
 
 	}  // Window
 }  // namespace
